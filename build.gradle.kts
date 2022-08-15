@@ -18,7 +18,7 @@ repositories {
 dependencies {
     compileOnly("org.jetbrains:annotations:23.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
-    testImplementation("org.yaml:snakeyaml:1.30")
+    // testImplementation("org.yaml:snakeyaml:1.30") // for better request parsing tests and stuff, so they don't have to be hard-coded
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
 }
 
