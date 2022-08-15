@@ -7,7 +7,6 @@ import java.io.Writer;
 import java.nio.ByteBuffer;
 
 public interface HttpResponse extends HttpSerialisable {
-    HttpMethod getMethod();
     HttpVersion getVersion();
     HttpStatus getStatus();
 
