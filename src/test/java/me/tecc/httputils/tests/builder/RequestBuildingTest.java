@@ -20,6 +20,6 @@ public class RequestBuildingTest {
         assertNotNull(builder.getHeaders());
         assertEquals(0, builder.getHeaders().count());
         assertNotNull(builder.getBody());
-        assertEquals(0, builder.getBody().length);
+        assertEquals(0, builder.getBody().limit());
     }
 }

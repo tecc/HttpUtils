@@ -2,11 +2,13 @@ package me.tecc.httputils.request;
 
 import me.tecc.httputils.utils.HttpHeaders;
 import me.tecc.httputils.utils.HttpMethod;
+import me.tecc.httputils.utils.HttpUtil;
 import me.tecc.httputils.utils.HttpVersion;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -16,7 +18,7 @@ public class HttpRequestBuilder implements HttpRequest {
     private @NotNull HttpMethod m_method = HttpMethod.GET;
     private @NotNull String m_path = "/";
     private @NotNull HttpHeaders m_headers = new HttpHeaders();
-    private byte @NotNull [] m_body = new byte[0];
+    private @NotNull ByteBuffer m_body = HttpUtil.EMPTY_BUFFER;
 
     public HttpRequestBuilder() {
     }
@@ -28,10 +30,11 @@ public class HttpRequestBuilder implements HttpRequest {
         this.m_headers = new HttpHeaders(this.m_headers);
 
         // Copy body
-        byte[] body = request.getBody();
-        if (body != null && body.length > 0) {
-            this.m_body = new byte[body.length];
-            System.arraycopy(body, 0, this.m_body, 0, body.length);
+        ByteBuffer body = request.getBody();
+        if (body != null && body.limit() > 0) {
+            this.m_body = HttpUtil.copyBuffer(body);
+        } else {
+            this.m_body = HttpUtil.EMPTY_BUFFER;
         }
 
     }
@@ -102,15 +105,15 @@ public class HttpRequestBuilder implements HttpRequest {
     @Contract("_ -> this")
     public HttpRequestBuilder body(byte @Nullable [] body) {
         if (body != null) {
-            this.m_body = body;
+            this.m_body = ByteBuffer.wrap(body);
         } else {
-            this.m_body = new byte[0];
+            this.m_body = HttpUtil.EMPTY_BUFFER;
         }
         return this;
     }
 
     @Override
-    public byte @NotNull [] getBody() {
+    public @NotNull ByteBuffer getBody() {
         return this.m_body;
     }
 }

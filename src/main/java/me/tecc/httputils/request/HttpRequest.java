@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.ByteBuffer;
 
 /**
  * Interface for representing an HTTP request.
@@ -27,7 +28,8 @@ public interface HttpRequest extends HttpSerialisable {
     @NotNull
     HttpHeaders getHeaders();
 
-    byte @NotNull [] getBody();
+    @NotNull
+    ByteBuffer getBody();
 
     /**
      * Serialises this request as per HTTP specifications.
@@ -48,26 +50,27 @@ public interface HttpRequest extends HttpSerialisable {
         HttpHeaders headers = new HttpHeaders(getHeaders()); // Copy it for safety
 
         boolean hasTransferEncoding = headers.has("Transfer-Encoding");
-        byte[] body = getBody();
+        ByteBuffer body = getBody();
         if (!hasTransferEncoding) {
-            if (body == null || body.length < 1) {
+            if (body == null || body.limit() < 1) {
                 // Per https://httpwg.org/specs/rfc7230.html#header.content-length,
                 // if the method does not anticipate a body, we should not send a Content-Length header
                 if (method.requestShouldHaveBody()) {
                     headers.put(HttpHeaders.CONTENT_LENGTH, String.valueOf(0));
                 }
             } else {
-                headers.put(HttpHeaders.CONTENT_LENGTH, String.valueOf(body.length));
+                headers.put(HttpHeaders.CONTENT_LENGTH, String.valueOf(body.limit()));
             }
         }
 
         writer.append("\r\n");
         headers.serialise(writer);
 
-        if (body != null) {
+        if (body != null && body.limit() > 0) {
             writer.append("\r\n");
-            for (byte b : body) {
-                writer.write(b);
+            int lim = body.limit();
+            for (int i = 0; i < lim; i++) {
+                writer.write(body.get(i));
             }
         }
     }

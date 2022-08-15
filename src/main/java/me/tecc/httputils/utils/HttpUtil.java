@@ -4,7 +4,19 @@ import me.tecc.httputils.request.HttpRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.ByteBuffer;
+
 public class HttpUtil {
+
+    public static final ByteBuffer EMPTY_BUFFER = ByteBuffer.allocate(0);
+
+    public static ByteBuffer copyBuffer(@NotNull ByteBuffer buffer) {
+        byte[] buf = new byte[buffer.limit()];
+        buffer.position(0);
+        buffer.get(buf, 0, buffer.limit());
+        return ByteBuffer.wrap(buf);
+    }
+
     public static HttpRequest makeImmutable(@NotNull HttpRequest request) {
         if (request == null) {
             throw new IllegalArgumentException("Request may not be null");
@@ -15,19 +27,16 @@ public class HttpUtil {
         HttpVersion version = request.getVersion();
         HttpHeaders headers = new HttpHeaders(request.getHeaders());
 
-        byte[] sourceBody = request.getBody();
-        byte[] body;
-        if (sourceBody.length > 0) {
-            body = new byte[sourceBody.length];
-            System.arraycopy(sourceBody, 0, body, 0, sourceBody.length);
-        } else {
-            body = new byte[0];
-        }
+        ByteBuffer sourceBody = request.getBody();
 
-        return create(method, version, path, headers, body);
+        return create(method, version, path, headers, copyBuffer(sourceBody));
     }
 
     public static HttpRequest create(HttpMethod method, HttpVersion version, String path, HttpHeaders headers, byte[] body) {
+        return create(method, version, path, headers, ByteBuffer.wrap(body));
+    }
+
+    public static HttpRequest create(HttpMethod method, HttpVersion version, String path, HttpHeaders headers, ByteBuffer body) {
         return new HttpRequest() {
             @Override
             public @NotNull HttpMethod getMethod() {
@@ -50,7 +59,7 @@ public class HttpUtil {
             }
 
             @Override
-            public byte @NotNull [] getBody() {
+            public @NotNull ByteBuffer getBody() {
                 return body;
             }
         };
