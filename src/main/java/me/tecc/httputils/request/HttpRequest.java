@@ -10,16 +10,52 @@ import java.nio.ByteBuffer;
 /**
  * Interface for representing an HTTP request.
  * Comes with a default serialiser.
+ *
+ * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#http_requests">MDN Web Docs: HTTP Requests</a>
  */
 public interface HttpRequest extends HttpSerialisable {
+    /**
+     * Gets the HTTP method of this request.
+     * @return the HTTP method of this request
+     * @see HttpMethod
+     */
     @NotNull HttpMethod getMethod();
 
+    /**
+     * Gets the path of this request. May be a URL.
+     * The path will include query parameters.
+     *
+     * @return The path of this request.
+     * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#http_requests">MDN Web Docs: HTTP Requests</a>
+     */
     @NotNull String getPath();
 
+    /**
+     * Gets the HTTP version of this request.
+     * <p>
+     * Note that the HTTP version may affect how the request is serialised by default.
+     *
+     * @return The HTTP version of this request.
+     * @see HttpVersion
+     */
     @NotNull HttpVersion getVersion();
 
+    /**
+     * Gets the HTTP headers of this request.
+     * <p>
+     * Note that the headers may affect how the request is serialised by default,
+     * and that some headers will be overridden by the default serialiser.
+     *
+     * @return The headers of this request.
+     * @see HttpHeaders
+     */
     @NotNull HttpHeaders getHeaders();
 
+    /**
+     * Gets the body of this request.
+     *
+     * @return The body of this request
+     */
     @NotNull ByteBuffer getBody();
 
     /**
@@ -38,7 +74,7 @@ public interface HttpRequest extends HttpSerialisable {
                 .append(" ").append(getPath())
                 .append(" HTTP/").append(getVersion().toString());
 
-        HttpHeaders headers = new HttpHeaders(getHeaders()); // Copy it for safety
+        HttpHeaders headers = new HttpHeaders(getHeaders()); // Copy it for safety, as this serialiser may modify the headers
 
         boolean hasTransferEncoding = headers.has("Transfer-Encoding");
         ByteBuffer body = getBody();
