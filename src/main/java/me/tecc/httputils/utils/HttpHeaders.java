@@ -61,4 +61,8 @@ public class HttpHeaders implements HttpSerialisable {
                     .append("\r\n");
         }
     }
+
+    public void clear() {
+        this.m_headers.clear();
+    }
 }
