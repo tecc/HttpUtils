@@ -17,6 +17,13 @@ public interface HttpResponse extends HttpSerialisable {
                 .append("HTTP/").append(getVersion().representation())
                 .append(" ");
         getStatus().serialise(writer);
+        writer.append("\r\n");
+        getHeaders().serialise(writer);
 
+        writer.append("\r\n");
+        ByteBuffer body = getBody();
+        if (body != null && body.limit() > 0) {
+            HttpUtil.writeBuffer(body, writer);
+        }
     }
 }
