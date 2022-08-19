@@ -23,6 +23,10 @@ public class HttpStatus implements HttpSerialisable {
         }
     }
 
+    public HttpStatus(HttpStatus status) {
+        this(status.m_code, status.m_message);
+    }
+
 
     public int getCode() {
         return this.m_code;
