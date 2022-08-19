@@ -11,6 +11,9 @@ public class HttpStatus implements HttpSerialisable {
     private static final Map<Integer, HttpStatus> BUILTINS = new HashMap<>();
 
     public static final HttpStatus OK = new HttpStatus(200, "OK");
+    public static HttpStatus getByCode(int code) {
+        return BUILTINS.get(code);
+    }
 
     public HttpStatus(int code, String message) {
         this(code, message, false);
