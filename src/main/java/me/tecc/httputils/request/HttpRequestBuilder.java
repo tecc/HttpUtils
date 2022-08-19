@@ -69,8 +69,12 @@ public class HttpRequestBuilder implements HttpRequest {
     }
 
     @Contract("_ -> this")
-    public HttpRequestBuilder headers(HttpHeaders headers) {
-        this.m_headers = headers;
+    public HttpRequestBuilder headers(@Nullable HttpHeaders headers) {
+        if (headers == null) {
+            this.m_headers.clear();
+        } else {
+            this.m_headers = headers;
+        }
         return this;
     }
 
@@ -80,7 +84,10 @@ public class HttpRequestBuilder implements HttpRequest {
     }
 
     @Contract("_ -> this")
-    public HttpRequestBuilder method(HttpMethod method) {
+    public HttpRequestBuilder method(@NotNull HttpMethod method) {
+        if (method == null) {
+            throw new IllegalArgumentException("Parameter must not be null");
+        }
         this.m_method = method;
         return this;
     }
