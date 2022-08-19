@@ -1,11 +1,7 @@
 package me.tecc.httputils.request;
 
-import me.tecc.httputils.utils.HttpHeaders;
-import me.tecc.httputils.utils.HttpMethod;
-import me.tecc.httputils.utils.HttpSerialisable;
-import me.tecc.httputils.utils.HttpVersion;
+import me.tecc.httputils.utils.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -16,20 +12,15 @@ import java.nio.ByteBuffer;
  * Comes with a default serialiser.
  */
 public interface HttpRequest extends HttpSerialisable {
-    @NotNull
-    HttpMethod getMethod();
+    @NotNull HttpMethod getMethod();
 
-    @NotNull
-    String getPath();
+    @NotNull String getPath();
 
-    @NotNull
-    HttpVersion getVersion();
+    @NotNull HttpVersion getVersion();
 
-    @NotNull
-    HttpHeaders getHeaders();
+    @NotNull HttpHeaders getHeaders();
 
-    @NotNull
-    ByteBuffer getBody();
+    @NotNull ByteBuffer getBody();
 
     /**
      * Serialises this request as per HTTP specifications.
@@ -66,12 +57,9 @@ public interface HttpRequest extends HttpSerialisable {
         writer.append("\r\n");
         headers.serialise(writer);
 
+        writer.append("\r\n"); // The empty line is necessary, according to https://computersciencewiki.org/index.php/HTTP_or_HTTP/2
         if (body != null && body.limit() > 0) {
-            writer.append("\r\n");
-            int lim = body.limit();
-            for (int i = 0; i < lim; i++) {
-                writer.write(body.get(i));
-            }
+            HttpUtil.writeBuffer(body, writer);
         }
     }
 
