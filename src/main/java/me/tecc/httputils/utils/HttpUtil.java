@@ -4,6 +4,8 @@ import me.tecc.httputils.request.HttpRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 
 public class HttpUtil {
@@ -63,5 +65,12 @@ public class HttpUtil {
                 return body;
             }
         };
+    }
+
+    public static void writeBuffer(ByteBuffer buffer, Writer writer) throws IOException {
+        int lim = buffer.limit();
+        for (int i = 0; i < lim; i++) {
+            writer.write(buffer.get(i));
+        }
     }
 }
