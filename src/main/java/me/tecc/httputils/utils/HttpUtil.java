@@ -2,7 +2,6 @@ package me.tecc.httputils.utils;
 
 import me.tecc.httputils.request.HttpRequest;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.Writer;
